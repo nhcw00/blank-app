@@ -4,6 +4,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
+from io import StringIO # Good practice, though kagglehub might not need it
+
+# --- 0. Set Page Configuration ---
+# This is the line you need to add for "wide mode"
+st.set_page_config(layout="wide")
 
 # --- 1. Load and Prepare Data (Cached) ---
 
@@ -18,9 +23,10 @@ def load_data():
         file_path = "US_Accidents_March23.csv"
         
         # Set pandas keyword arguments
+        # Using a smaller sample for faster dashboard loading in this environment
         pandas_kwargs = {"nrows": 500000}
 
-        st.info(f"Loading data from Kaggle dataset 'sobhanmoosavi/us-accidents' (file: {file_path})...")
+        st.info(f"Loading data from Kaggle dataset 'sobhanmoosavi/us-accidents' (file: {file_path})... (Sampled to 500k rows)")
         
         # Load the latest version using kagglehub
         df = kagglehub.load_dataset(
