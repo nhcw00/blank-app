@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
-from io import StringIO # Good practice, though kagglehub might not need it
+from io import StringIO
 
 # --- 0. Set Page Configuration ---
 # This is the line you need to add for "wide mode"
