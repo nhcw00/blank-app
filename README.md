@@ -2,6 +2,9 @@
 
 This is an interactive web application built with Plotly and Dash to visualize and explore a large dataset of traffic accidents in the United States. It allows users to filter data and observe trends related to accident severity, location, time, and weather conditions.
 
+**Streamlit App is Available** 
+    - https://us-accident-u9x8vsxfvnjgfi5iwwvxtk.streamlit.app/
+
 ## Features
 
 This dashboard provides several interactive visualizations that update based on your filter selections:
