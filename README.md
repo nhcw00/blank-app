@@ -1,7 +1,5 @@
 # US Traffic Accidents Dashboard
 
-# Chunwo Lim (Freddie)
-
 This is an interactive web application built with Plotly and Dash to visualize and explore a large dataset of traffic accidents in the United States. It allows users to filter data and observe trends related to accident severity, location, time, and weather conditions.
 
 ## Features
