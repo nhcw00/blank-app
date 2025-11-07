@@ -7,7 +7,7 @@ from kagglehub import KaggleDatasetAdapter
 from io import StringIO
 
 # --- 0. Set Page Configuration ---
-# This is the line you need to add for "wide mode"
+# This is the line to add for "wide mode"
 st.set_page_config(layout="wide")
 
 # --- 1. Load and Prepare Data (Cached) ---
