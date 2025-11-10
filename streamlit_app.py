@@ -27,7 +27,7 @@ def load_data():
         pandas_kwargs = {"nrows": 500000}
 
         # For Full dataset:
-        pandas_kwargs = {}
+        # pandas_kwargs = {}
 
         st.info(f"Loading data from Kaggle dataset 'sobhanmoosavi/us-accidents' (file: {file_path})... (Sampled to 500k rows)")
         
