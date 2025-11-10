@@ -24,7 +24,8 @@ def load_data():
         
         # Set pandas keyword arguments
         # Using a smaller sample for faster dashboard loading in this environment
-        pandas_kwargs = {"nrows": 500000}
+        # pandas_kwargs = {"nrows": 500000}
+        pandas_kwargs = {}
 
         st.info(f"Loading data from Kaggle dataset 'sobhanmoosavi/us-accidents' (file: {file_path})... (Sampled to 500k rows)")
         
