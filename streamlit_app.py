@@ -185,7 +185,7 @@ else:
         st.plotly_chart(fig_time, use_container_width=True)
 
     # --- Weather Conditions (in col4) ---
-    # This section is now interactive, replacing the static 'visibility-bar'
+    # This section applies the binned/rounded scatter plot logic
     with col4:
         st.subheader('Weather Condition Analysis')
         
@@ -196,7 +196,6 @@ else:
             index=0  # Default to 'Visibility'
         )
 
-        # --- NEW: AGGREGATION LOGIC ---
         # Map labels to actual column names
         metric_map = {
             'Visibility': 'Visibility(mi)',
@@ -205,33 +204,46 @@ else:
         }
         selected_metric_col = metric_map[selected_metric_label]
 
-        # 1. Get accident counts per month
-        dff_agg_count = df_filtered.groupby('YearMonth').size().reset_index(name='Accident Count')
+        # --- NEW LOGIC: Bin, Count, and Scatter ---
         
-        # 2. Get average weather per month
-        dff_agg_weather = df_filtered.groupby('YearMonth')[['Temperature(F)', 'Visibility(mi)', 'Wind_Speed(mph)']].mean().reset_index()
-        
-        # 3. Merge the two aggregated dataframes
-        dff_monthly = pd.merge(dff_agg_count, dff_agg_weather, on='YearMonth')
-        # --- END NEW AGGREGATION LOGIC ---
+        # 1. Clean data (filter outliers) based on selected metric
+        if selected_metric_col == 'Wind_Speed(mph)':
+            # Filter outliers for a better view
+            dff_clean = df_filtered[df_filtered['Wind_Speed(mph)'] < 100].copy()
+            xaxis_title = 'Wind Speed (mph, Rounded to nearest mph)'
+        elif selected_metric_col == 'Visibility(mi)':
+            # Filter to 20 miles to see the <10mi range better
+            dff_clean = df_filtered[df_filtered['Visibility(mi)'] <= 20].copy()
+            xaxis_title = 'Visibility (mi, Rounded to nearest mile)'
+        else: # Temperature
+            dff_clean = df_filtered.copy()
+            xaxis_title = 'Temperature (F, Rounded to nearest degree)'
 
-        # Define nice labels for the axes
-        labels = {
-            'Accident Count': 'Total Accidents This Month',
-            'Visibility(mi)': 'Average Visibility (mi)',
-            'Temperature(F)': 'Average Temperature (F)',
-            'Wind_Speed(mph)': 'Average Wind Speed (mph)'
-        }
+        if dff_clean.empty:
+            st.warning("No data for this metric after cleaning outliers.")
+        else:
+            # 2. Bin the data by rounding to the nearest integer
+            binned_col = f"{selected_metric_col}_Rounded"
+            dff_clean[binned_col] = dff_clean[selected_metric_col].round()
 
-        # Create the scatter plot
-        fig = px.scatter(
-            dff_monthly,
-            x=selected_metric_col,
-            y='Accident Count',
-            hover_data=['YearMonth'],
-            trendline='ols', # Add trendline to show correlation
-            title=f'Monthly Accident Count vs. Average {selected_metric_label}',
-            labels=labels
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+            # 3. Aggregate to find frequency (Count)
+            freq_data = dff_clean.groupby(binned_col).size().reset_index(name='Accident Frequency')
+
+            # 4. Create the scatter plot
+            chart_title = f'Accident Frequency by {selected_metric_label}'
+            
+            fig = px.scatter(
+                freq_data,
+                x=binned_col,
+                y='Accident Frequency',
+                title=chart_title,
+                size='Accident Frequency', # Makes points with higher frequency larger
+                hover_data={binned_col: True, 'Accident Frequency': True}
+            )
+
+            fig.update_layout(
+                xaxis_title=xaxis_title,
+                yaxis_title='Accident Frequency (Count)'
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
