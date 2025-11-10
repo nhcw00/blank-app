@@ -1,6 +1,6 @@
 # US Traffic Accidents Dashboard
 
-This is an interactive web application built with Plotly and Dash to visualize and explore a large dataset of traffic accidents in the United States. It allows users to filter data and observe trends related to accident severity, location, time, and weather conditions. 
+This is an interactive web application built with Plotly and Dash to visualize and explore a large dataset of traffic accidents in the United States. It allows users to filter data and observe trends related to accident severity, location, time, and weather conditions. By default, this script is configured **to load only the first 500,000 rows** of the dataset.
 
 Explore the complete, interactive dashboard hosted on “Streamlit”. The findings and features discussed below are all drawn from this live application:
 
