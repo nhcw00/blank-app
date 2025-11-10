@@ -25,9 +25,9 @@ def load_data():
         # Set pandas keyword arguments
         # Using a smaller sample for faster dashboard loading in this environment
         pandas_kwargs = {"nrows": 500000}
-        
-        # Full dataset loading
-        # pandas_kwargs = {}
+
+        # For Full dataset:
+        pandas_kwargs = {}
 
         st.info(f"Loading data from Kaggle dataset 'sobhanmoosavi/us-accidents' (file: {file_path})... (Sampled to 500k rows)")
         
@@ -190,56 +190,48 @@ else:
         st.subheader('Weather Condition Analysis')
         
         # Add the selectbox to choose the metric
-        selected_metric = st.selectbox(
+        selected_metric_label = st.selectbox(
             'Select Weather Metric:',
             options=['Visibility', 'Temperature', 'Wind Speed'],
             index=0  # Default to 'Visibility'
         )
 
-        # Now, use if/elif to build the correct chart
-        if selected_metric == 'Visibility':
-            # This is the original bar chart logic
-            bins = [0, 1, 3, 5, 10, 50, 100]
-            labels = ['0-1 mi', '1-3 mi', '3-5 mi', '5-10 mi', '10-50 mi', '50+ mi']
-            df_filtered['Visibility_Bin'] = pd.cut(df_filtered['Visibility(mi)'], bins=bins, labels=labels, right=False)
-            vis_counts = df_filtered['Visibility_Bin'].value_counts().sort_index()
-            
-            fig_vis = px.bar(
-                x=vis_counts.index,
-                y=vis_counts.values,
-                labels={'x': 'Visibility (miles)', 'y': 'Number of Accidents'}
-            )
-            fig_vis.update_layout(title_x=0.5, title_text='Accident Frequency by Visibility')
-            st.plotly_chart(fig_vis, use_container_width=True)
+        # --- NEW: AGGREGATION LOGIC ---
+        # Map labels to actual column names
+        metric_map = {
+            'Visibility': 'Visibility(mi)',
+            'Temperature': 'Temperature(F)',
+            'Wind Speed': 'Wind_Speed(mph)'
+        }
+        selected_metric_col = metric_map[selected_metric_label]
 
-        elif selected_metric == 'Temperature':
-            # Create a histogram for Temperature
-            fig_temp = px.histogram(
-                df_filtered, 
-                x='Temperature(F)', 
-                nbins=30, # 30 bins
-                title='Accident Frequency by Temperature'
-            )
-            # Use update_layout to set axis titles
-            fig_temp.update_layout(
-                xaxis_title='Temperature (F)',
-                yaxis_title='Number of Accidents'
-            )
-            st.plotly_chart(fig_temp, use_container_width=True)
+        # 1. Get accident counts per month
+        dff_agg_count = df_filtered.groupby('YearMonth').size().reset_index(name='Accident Count')
+        
+        # 2. Get average weather per month
+        dff_agg_weather = df_filtered.groupby('YearMonth')[['Temperature(F)', 'Visibility(mi)', 'Wind_Speed(mph)']].mean().reset_index()
+        
+        # 3. Merge the two aggregated dataframes
+        dff_monthly = pd.merge(dff_agg_count, dff_agg_weather, on='YearMonth')
+        # --- END NEW AGGREGATION LOGIC ---
 
-        elif selected_metric == 'Wind Speed':
-            # Create a histogram for Wind Speed
-            # Filter out extreme outliers for a better view
-            df_wind = df_filtered[df_filtered['Wind_Speed(mph)'] < 100] 
-            fig_wind = px.histogram(
-                df_wind, 
-                x='Wind_Speed(mph)', 
-                nbins=20, # 20 bins
-                title='Accident Frequency by Wind Speed (up to 100 mph)'
-            )
-            # Use update_layout to set axis titles
-            fig_wind.update_layout(
-                xaxis_title='Wind Speed (mph)',
-                yaxis_title='Number of Accidents'
-            )
-            st.plotly_chart(fig_wind, use_container_width=True)
+        # Define nice labels for the axes
+        labels = {
+            'Accident Count': 'Total Accidents This Month',
+            'Visibility(mi)': 'Average Visibility (mi)',
+            'Temperature(F)': 'Average Temperature (F)',
+            'Wind_Speed(mph)': 'Average Wind Speed (mph)'
+        }
+
+        # Create the scatter plot
+        fig = px.scatter(
+            dff_monthly,
+            x=selected_metric_col,
+            y='Accident Count',
+            hover_data=['YearMonth'],
+            trendline='ols', # Add trendline to show correlation
+            title=f'Monthly Accident Count vs. Average {selected_metric_label}',
+            labels=labels
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
