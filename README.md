@@ -2,8 +2,6 @@
 
 This is an interactive web application built with Plotly and Dash to visualize and explore a large dataset of traffic accidents in the United States. It allows users to filter data and observe trends related to accident severity, location, time, and weather conditions. 
 
-
-
 Explore the complete, interactive dashboard hosted on “Streamlit”. The findings and features discussed below are all drawn from this live application:
 
 **Streamlit App** 
@@ -17,8 +15,9 @@ This dashboard provides several interactive visualizations that update based on 
 
     - Accident Map: A scatter map showing the geographic location of accidents, colored by severity.
     - Severity Distribution: A bar chart showing the total number of accidents for each severity level (1-4).
-    - Accident Trend: A line chart displaying the total number of accidents over time (grouped by month).    
-    - Visibility Distribution: A bar chart showing how many accidents occurred under different visibility conditions (in miles).
+    - Accident Trend: A line chart displaying the total number of accidents over time (grouped by month).
+    - Weather Condition Analysis: An interactive scatter plot. Use the "Select Weather Metric" dropdown to switch the chart's x-axis between Visibility, Temperature, and Wind Speed to see how accident frequency changes with each metric.
+
 
 ## Filters
 
