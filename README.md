@@ -5,7 +5,6 @@ This is an interactive web application built with Plotly and Dash to visualize a
 Explore the complete, interactive dashboard hosted on “Streamlit”. The findings and features discussed below are all drawn from this live application:
 
 **Streamlit App** 
-
     - https://us-accident-u9x8vsxfvnjgfi5iwwvxtk.streamlit.app/
     
     - This live version uses a **500,000-row sample for performance** due to **hosting limitations**.)
