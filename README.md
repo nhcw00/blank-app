@@ -6,9 +6,9 @@ Explore the complete, interactive dashboard hosted on “Streamlit”. The findi
 
 **Streamlit App** 
 
-    https://us-accident-u9x8vsxfvnjgfi5iwwvxtk.streamlit.app/
+    - https://us-accident-u9x8vsxfvnjgfi5iwwvxtk.streamlit.app/
     
-    This live version uses a **500,000-row sample for performance** due to **hosting limitations**.)
+    - This live version uses a **500,000-row sample for performance** due to **hosting limitations**.)
 
 ## Features
 
