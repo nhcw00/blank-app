@@ -128,7 +128,6 @@ else:
     col1, col2 = st.columns(2)
     
     # --- Map Visualization (in col1) ---
-    # Replaces 'update_map' callback
     with col1:
         st.subheader(f'Accident Locations in {selected_state}')
         
@@ -153,12 +152,10 @@ else:
         st.plotly_chart(fig_map, use_container_width=True)
 
     # --- Severity Distribution (in col2) ---
-    # Replaces 'update_severity_bar' callback
     with col2:
         st.subheader('Accident Severity Distribution')
         severity_counts = df_filtered['Severity'].value_counts().sort_index()
         fig_sev = px.bar(
-            severity_counts,
             x=severity_counts.index,
             y=severity_counts.values,
             labels={'x': 'Severity Level', 'y': 'Number of Accidents'}
@@ -170,7 +167,6 @@ else:
     col3, col4 = st.columns(2)
     
     # --- Accident Trend Over Time (in col3) ---
-    # Replaces 'update_time_trend' callback
     with col3:
         st.subheader('Accident Trend Over Time (Monthly)')
         monthly_counts = df_filtered.groupby('YearMonth').size().reset_index(name='Accident Count')
@@ -185,24 +181,62 @@ else:
         fig_time.update_layout(title_x=0.5, title_text='Accident Trend Over Time (Monthly)')
         st.plotly_chart(fig_time, use_container_width=True)
 
-    # --- Weather (Visibility) (in col4) ---
-    # Replaces 'update_visibility_chart' callback
+    # --- Weather Conditions (in col4) ---
+    # This section is now interactive, replacing the static 'visibility-bar'
     with col4:
-        st.subheader('Accident Frequency by Visibility')
+        st.subheader('Weather Condition Analysis')
         
-        # Bin visibility data for clarity
-        bins = [0, 1, 3, 5, 10, 50, 100]
-        labels = ['0-1 mi', '1-3 mi', '3-5 mi', '5-10 mi', '10-50 mi', '50+ mi']
-        # Use df_filtered directly
-        df_filtered['Visibility_Bin'] = pd.cut(df_filtered['Visibility(mi)'], bins=bins, labels=labels, right=False)
-        
-        vis_counts = df_filtered['Visibility_Bin'].value_counts().sort_index()
-        
-        fig_vis = px.bar(
-            vis_counts,
-            x=vis_counts.index,
-            y=vis_counts.values,
-            labels={'x': 'Visibility (miles)', 'y': 'Number of Accidents'}
+        # Add the selectbox to choose the metric
+        selected_metric = st.selectbox(
+            'Select Weather Metric:',
+            options=['Visibility', 'Temperature', 'Wind Speed'],
+            index=0  # Default to 'Visibility'
         )
-        fig_vis.update_layout(title_x=0.5, title_text='Accident Frequency by Visibility')
-        st.plotly_chart(fig_vis, use_container_width=True)
+
+        # Now, use if/elif to build the correct chart
+        if selected_metric == 'Visibility':
+            # This is the original bar chart logic
+            bins = [0, 1, 3, 5, 10, 50, 100]
+            labels = ['0-1 mi', '1-3 mi', '3-5 mi', '5-10 mi', '10-50 mi', '50+ mi']
+            df_filtered['Visibility_Bin'] = pd.cut(df_filtered['Visibility(mi)'], bins=bins, labels=labels, right=False)
+            vis_counts = df_filtered['Visibility_Bin'].value_counts().sort_index()
+            
+            fig_vis = px.bar(
+                x=vis_counts.index,
+                y=vis_counts.values,
+                labels={'x': 'Visibility (miles)', 'y': 'Number of Accidents'}
+            )
+            fig_vis.update_layout(title_x=0.5, title_text='Accident Frequency by Visibility')
+            st.plotly_chart(fig_vis, use_container_width=True)
+
+        elif selected_metric == 'Temperature':
+            # Create a histogram for Temperature
+            fig_temp = px.histogram(
+                df_filtered, 
+                x='Temperature(F)', 
+                nbins=30, # 30 bins
+                title='Accident Frequency by Temperature'
+            )
+            # Use update_layout to set axis titles
+            fig_temp.update_layout(
+                xaxis_title='Temperature (F)',
+                yaxis_title='Number of Accidents'
+            )
+            st.plotly_chart(fig_temp, use_container_width=True)
+
+        elif selected_metric == 'Wind Speed':
+            # Create a histogram for Wind Speed
+            # Filter out extreme outliers for a better view
+            df_wind = df_filtered[df_filtered['Wind_Speed(mph)'] < 100] 
+            fig_wind = px.histogram(
+                df_wind, 
+                x='Wind_Speed(mph)', 
+                nbins=20, # 20 bins
+                title='Accident Frequency by Wind Speed (up to 100 mph)'
+            )
+            # Use update_layout to set axis titles
+            fig_wind.update_layout(
+                xaxis_title='Wind Speed (mph)',
+                yaxis_title='Number of Accidents'
+            )
+            st.plotly_chart(fig_wind, use_container_width=True)
