@@ -35,11 +35,3 @@ This dashboard uses the US Accidents (2016 - 2023) dataset from Kaggle, provided
 
 The kagglehub library automatically downloads the necessary data file (US_Accidents_March23.csv) when you first run the script. No manual download is required.
 
-### Note on Data Size
-
-By default, this script is configured to load only the first 500,000 rows of the dataset.
-
-If you want to analyze the entire dataset (over 7.7 million rows), you can change this line to an empty dictionary.
-
-**Warning:** 
-Loading the full dataset will require a significant amount of RAM (potentially 10GB+) and will make the dashboard much slower to load and interact with.
