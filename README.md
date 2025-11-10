@@ -2,7 +2,7 @@
 
 This is an interactive web application built with Plotly and Dash to visualize and explore a large dataset of traffic accidents in the United States. It allows users to filter data and observe trends related to accident severity, location, time, and weather conditions. 
 
-By default, this script is configured **to load only the first 500,000 rows** of the dataset since it has error on loading full dataset.
+This live version uses a **500,000-row sample for performance** due to **hosting limitations**.)
 
 Explore the complete, interactive dashboard hosted on “Streamlit”. The findings and features discussed below are all drawn from this live application:
 
